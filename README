@@ -1,0 +1,43 @@
+README
+
+Remap is an addon for the Orbiter Space Flight Simulator.
+
+It defines additional key mappings for direct control of the thrusters
+of the currently selected vessel.
+
+The original purpose for this addon was to enable direct control of the
+translation thrusters without having to switch betweenthe Translation and
+the Rotation Modes.
+
+However, the code was written in a fairly generic manner in order to enable
+any standard thruster group to be controlled, which includes the Rotation Mode
+thrusters, as well as the Main and Retro engine thrusters.
+
+By default the additional key mappings are as follows:
+
+Alt   + NUM4 / NUM6  Engage left/right translation thrusters.
+Alt   + NUM9 / NUM3  Engage up/down translation thrusters.
+Alt   + NUM8 / NUM2  Engage forward/back translation thrusters.
+
+Shift + NUM4 / NUM6  Engage longitudinal axis rotation thrusters (bank left/right).
+Shift + NUM2 / NUM8  Engage transversal axis rotation thrusters (pitch up/down).
+Shift + NUM1 / NUM3  Engage vertical axis rotation thrusters (yaw left/right).
+
+In combination with Ctrl, the thrusters are engaged at 10% maximum thrust
+for fine control.
+
+INSTALL
+
+1. Ensure PLATFORMSDK and ORBITER paths are set correctly in the makefile.
+2. Run 'nmake all' inside the Remap directory to compile the addon.
+3. Run 'nmake install' inside the Remap directory to install the addon.
+4. Enable the addon in the Orbiter.
+5. Share and enjoy.
+
+The key mappings can be customized by modifing the control array in the
+remap.hpp file.
+
+AUTHORS
+
+Name: Dimitry Ishenko
+Contact: dimitry (dot) ishenko (at) (gee) mail (dot) com
