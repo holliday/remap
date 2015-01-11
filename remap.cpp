@@ -63,7 +63,7 @@ void Remap::clbkPreStep(double, double, double)
                 vessel->SetThrusterGroupLevel(control[i].thruster, level);
                 state[i].previous = state[i].current;
 
-#ifndef _NDEBUG
+#ifndef NDEBUG
                 sprintf(message, "%s = %f", control[i].name, level);
                 oapiWriteLog(message);
 #endif
