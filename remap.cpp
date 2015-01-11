@@ -19,6 +19,11 @@ static inline bool getKeyState(int vkCode)
 Remap::Remap(HINSTANCE hDLL):
     oapi::Module(hDLL)
 {
+    for(int i = 0; i < CONTROL_COUNT; ++i)
+    {
+        state[i].previous = false;
+        state[i].current = false;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,27 +32,27 @@ Remap::~Remap()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Remap::clbkPreStep(double simt, double simdt, double mjd)
+void Remap::clbkPreStep(double, double, double)
 {
-    bool menu    = getKeyState(VK_MENU);
-    bool shift   = getKeyState(VK_SHIFT);
-    bool control = getKeyState(VK_CONTROL);
+    VESSEL* vessel = oapiGetFocusInterface();
+    if(vessel)
+    {
+        Modifier modifier = None;
+        if(getKeyState(VK_MENU))    modifier = static_cast<Modifier>(modifier | Alt);
+        if(getKeyState(VK_SHIFT))   modifier = static_cast<Modifier>(modifier | Shift);
+        if(getKeyState(VK_CONTROL)) modifier = static_cast<Modifier>(modifier | Control);
 
-    bool right   = getKeyState(VK_NUMPAD6);
-    bool left    = getKeyState(VK_NUMPAD4);
-    bool up      = getKeyState(VK_NUMPAD9);
-    bool down    = getKeyState(VK_NUMPAD3);
-    bool forward = getKeyState(VK_NUMPAD8);
-    bool back    = getKeyState(VK_NUMPAD2);
+        for(int i = 0; i < CONTROL_COUNT; ++i)
+        {
+            if(control[i].modifier & modifier)
+                state[i].current = getKeyState(control[i].key);
 
-    if(menu)    oapiWriteLog("ALT");
-    if(shift)   oapiWriteLog("SHIFT");
-    if(control) oapiWriteLog("CTRL");
-
-    if(right)   oapiWriteLog("RIGHT");
-    if(left)    oapiWriteLog("LEFT");
-    if(up)      oapiWriteLog("UP");
-    if(down)    oapiWriteLog("DOWN");
-    if(forward) oapiWriteLog("FORWARD");
-    if(back)    oapiWriteLog("BACK");
+            if(state[i].current != state[i].previous)
+            {
+                double value = state[i].current ? ((modifier & Control) ? 0.1 : 1.0) : 0.0;
+                vessel->SetThrusterGroupLevel(control[i].thruster, value);
+                state[i].previous = state[i].current;
+            }
+        }
+    }
 }
