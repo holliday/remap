@@ -35,24 +35,30 @@ Remap::~Remap()
 ////////////////////////////////////////////////////////////////////////////////
 void Remap::clbkPreStep(double, double, double)
 {
+    static char message[256];
+
     VESSEL* vessel = oapiGetFocusInterface();
     if(vessel)
     {
         Modifier modifier = None;
-        if(getKeyState(VK_MENU))    modifier = static_cast<Modifier>(modifier | Alt);
-        if(getKeyState(VK_SHIFT))   modifier = static_cast<Modifier>(modifier | Shift);
-        if(getKeyState(VK_CONTROL)) modifier = static_cast<Modifier>(modifier | Control);
+        if(getKeyState(VK_MENU))    modifier = modifier | Alt;
+        if(getKeyState(VK_SHIFT))   modifier = modifier | Shift;
+        if(getKeyState(VK_CONTROL)) modifier = modifier | Control;
 
         for(int i = 0; i < CONTROL_COUNT; ++i)
         {
-            if(control[i].modifier & modifier)
-                state[i].current = getKeyState(control[i].key);
+            state[i].current = (control[i].modifier == modifier) && getKeyState(control[i].key);
 
             if(state[i].current != state[i].previous)
             {
-                double value = state[i].current ? ((modifier & Control) ? 0.1 : 1.0) : 0.0;
-                vessel->SetThrusterGroupLevel(control[i].thruster, value);
+                double level = state[i].current ? control[i].level : 0.0;
+                vessel->SetThrusterGroupLevel(control[i].thruster, level);
                 state[i].previous = state[i].current;
+
+#ifndef _NDEBUG
+                sprintf(message, "%s = %f", control[i].name, level);
+                oapiWriteLog(message);
+#endif
             }
         }
     }
