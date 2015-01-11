@@ -9,10 +9,11 @@ DLLCLBK void InitModule(HINSTANCE hModule)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+#define KEYSTATE_MASK (1 << (8 * sizeof(SHORT) - 1))
+
 static inline bool getKeyState(int vkCode)
 {
-    SHORT value = GetAsyncKeyState(vkCode);
-    return value && (1 << (8 * sizeof(SHORT) - 1 ));
+    return (GetAsyncKeyState(vkCode) & KEYSTATE_MASK) != 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
