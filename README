@@ -19,9 +19,11 @@ Alt   + NUM4 / NUM6  Engage left/right translation thrusters.
 Alt   + NUM9 / NUM3  Engage up/down translation thrusters.
 Alt   + NUM8 / NUM2  Engage forward/back translation thrusters.
 
-Shift + NUM4 / NUM6  Engage longitudinal axis rotation thrusters (bank left/right).
-Shift + NUM2 / NUM8  Engage transversal axis rotation thrusters (pitch up/down).
-Shift + NUM1 / NUM3  Engage vertical axis rotation thrusters (yaw left/right).
+Shift + NUM4 / NUM6  Engage bank left/right rotation thrusters.
+Shift + NUM2 / NUM8  Engage pitch up/down rotation thrusters.
+Shift + NUM1 / NUM3  Engage yaw left/right rotation thrusters.
+
+The NumLock key has to be ON for these to work.
 
 In combination with Ctrl, the thrusters are engaged at 10% maximum thrust
 for fine control.
