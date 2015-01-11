@@ -47,7 +47,8 @@ void Remap::clbkPreStep(double, double, double)
 
         for(int i = 0; i < CONTROL_COUNT; ++i)
         {
-            state[i].current = (control[i].modifier == modifier) && getKeyState(control[i].key);
+            state[i].current = (control[i].modifier == modifier)
+                 && getKeyState(control[i].key);
 
             if(state[i].current != state[i].previous)
             {

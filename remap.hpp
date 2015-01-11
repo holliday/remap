@@ -15,7 +15,10 @@ enum Modifier
     Control = 0x04,
 };
 
-inline Modifier operator|(Modifier x, Modifier y) { return static_cast<Modifier>(static_cast<int>(y) | static_cast<int>(x)); }
+inline Modifier operator|(Modifier x, Modifier y)
+{
+    return static_cast<Modifier>(static_cast<int>(y) | static_cast<int>(x));
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 struct Control
