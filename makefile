@@ -3,7 +3,9 @@ TARGET		= remap.dll
 SOURCES		= remap.cpp
 
 PLATFORMSDK	= C:\Program Files\Microsoft Platform SDK
-ORBITERSDK	= C:\Orbiter 2010\Orbitersdk
+ORBITER		= C:\Orbiter 2010
+ORBITERSDK	= $(ORBITER)\Orbitersdk
+ORBITERADDON= $(ORBITER)\Modules\Plugin
 
 INCLUDES	= /I "$(ORBITERSDK)\include" /I "$(PLATFORMSDK)\Include"
 LIBRARIES	= /LIBPATH:"$(ORBITERSDK)\lib" orbiter.lib Orbitersdk.lib /LIBPATH:"$(PLATFORMSDK)\Lib" user32.lib
@@ -24,3 +26,7 @@ $(TARGET): $(SOURCES)
 clean:
 	@echo Cleaning files
 	-del *.obj *.lib *.exp *.manifest $(TARGET)
+
+install: $(TARGET)
+	@echo Installing $(TARGET)
+	copy /y $(TARGET) "$(ORBITERADDON)\$(TARGET)"
