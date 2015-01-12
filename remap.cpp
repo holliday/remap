@@ -50,7 +50,7 @@ void Remap::clbkPreStep(double, double, double)
         Modifier modifier = None;
         if(getKeyState(VK_MENU))    modifier = modifier | Alt;
         if(getKeyState(VK_SHIFT))   modifier = modifier | Shift;
-        if(getKeyState(VK_CONTROL)) modifier = modifier | Control;
+        if(getKeyState(VK_CONTROL)) modifier = modifier | Ctrl;
 
         for(int i = 0; i < CONTROL_COUNT; ++i)
         {
