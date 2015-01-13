@@ -63,6 +63,17 @@ static inline bool getKeyState(int vkCode) { return (GetAsyncKeyState(vkCode) & 
 ////////////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+    Modifier modifier = None;
+    if(getKeyState(VK_MENU))    modifier = modifier | Alt;
+    if(getKeyState(VK_SHIFT))   modifier = modifier | Shift;
+    if(getKeyState(VK_CONTROL)) modifier = modifier | Ctrl;
+
+    int key = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam)->vkCode;
+    bool press = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN);
+
+    for(int i = 0; i < CONTROL_COUNT; ++i)
+        state[i].current = press && control[i].key == key && control[i].modifier == modifier;
+
     return CallNextHookEx(hook, nCode, wParam, lParam);
 }
 
