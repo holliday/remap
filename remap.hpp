@@ -94,7 +94,6 @@ public:
     virtual void clbkPreStep(double simt, double simdt, double mjd);
 
 protected:
-
     State state[CONTROL_COUNT];
 };
 
