@@ -71,7 +71,8 @@ LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
     if(getKeyState(VK_CONTROL)) modifier = modifier | Ctrl;
 
     for(int i = 0; i < CONTROL_COUNT; ++i)
-        state[i].current = !(kbd->flags & LLKHF_UP) && control[i].key == kbd->vkCode && control[i].modifier == modifier;
+        state[i].current = !(kbd->flags & LLKHF_UP) && control[i].key == kbd->scanCode
+                                                    && control[i].modifier == modifier;
 
     return CallNextHookEx(hook, nCode, wParam, lParam);
 }
