@@ -16,11 +16,17 @@ DLLCLBK void InitModule(HINSTANCE hModule)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-#define KEYSTATE_MASK (1 << (8 * sizeof(SHORT) - 1))
+////////////////////////////////////////////////////////////////////////////////
+Remap* Remap::instance = NULL;
+HHOOK Remap::hook = NULL;
 
-static inline bool getKeyState(int vkCode)
+////////////////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK Remap::StaticLowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    return (GetAsyncKeyState(vkCode) & KEYSTATE_MASK) != 0;
+    if(nCode >= 0 && instance)
+        return instance->LowLevelKeyboardProc(nCode, wParam, lParam);
+
+    return CallNextHookEx(hook, nCode, wParam, lParam);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,11 +38,32 @@ Remap::Remap(HINSTANCE hDLL):
         state[i].previous = false;
         state[i].current = false;
     }
+
+    instance = this;
+    hook = SetWindowsHookEx(WH_KEYBOARD_LL, &Remap::StaticLowLevelKeyboardProc, hModule, 0);
+    if(!hook)
+        oapiWriteLog("Remap::Remap: failed to install keyboard hook");
+    else oapiWriteLog("Remap::Remap: installed keyboard hook");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Remap::~Remap()
 {
+    if(hook)
+    {
+        UnhookWindowsHookEx(hook);
+        oapiWriteLog("Remap::Remap: uninstalled keyboard hook");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#define KEYSTATE_MASK (1 << (8 * sizeof(SHORT) - 1))
+static inline bool getKeyState(int vkCode) { return (GetAsyncKeyState(vkCode) & KEYSTATE_MASK) != 0; }
+
+////////////////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    return CallNextHookEx(hook, nCode, wParam, lParam);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,16 +74,8 @@ void Remap::clbkPreStep(double, double, double)
     VESSEL* vessel = oapiGetFocusInterface();
     if(vessel)
     {
-        Modifier modifier = None;
-        if(getKeyState(VK_MENU))    modifier = modifier | Alt;
-        if(getKeyState(VK_SHIFT))   modifier = modifier | Shift;
-        if(getKeyState(VK_CONTROL)) modifier = modifier | Ctrl;
-
         for(int i = 0; i < CONTROL_COUNT; ++i)
         {
-            state[i].current = (control[i].modifier == modifier)
-                 && getKeyState(control[i].key);
-
             if(state[i].current != state[i].previous)
             {
                 double level = state[i].current ? control[i].level : 0.0;

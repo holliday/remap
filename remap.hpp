@@ -95,6 +95,12 @@ public:
 
 protected:
     State state[CONTROL_COUNT];
+
+    LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+
+    static Remap* instance;
+    static HHOOK hook;
+    static LRESULT CALLBACK StaticLowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

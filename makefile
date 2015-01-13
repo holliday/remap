@@ -9,7 +9,7 @@ ORBITERADDON= $(ORBITER)\Modules\Plugin
 
 INCLUDES	= /I "$(ORBITERSDK)\include" /I "$(PLATFORMSDK)\Include"
 LIBRARIES	= /LIBPATH:"$(ORBITERSDK)\lib" orbiter.lib Orbitersdk.lib /LIBPATH:"$(PLATFORMSDK)\Lib" user32.lib
-DEFINES		= /D WIN32 /D NDEBUG
+DEFINES		= /D WIN32 /D NDEBUG /D _WINDOWS /D _WIN32_WINNT=0x0501
 
 CXX			= cl
 CXXFLAGS	= /O2 /EHsc /MD /GS- /fp:fast /W3 /GL /LD
