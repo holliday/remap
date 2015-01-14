@@ -9,7 +9,6 @@
 #include "remap.hpp"
 
 #include <fstream>
-#include <iomanip>
 #include <sstream>
 
 static char message[256];
@@ -67,7 +66,6 @@ void Remap::readKeymap()
     if(file)
     {
         std::string read;
-
         while(std::getline(file, read))
         {
             if(read.empty()) continue;
