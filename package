@@ -8,6 +8,9 @@ nmake all
 cp remap.dll Modules/Plugin
 cp README COPYING keymap-default.cfg Doc/remap
 
+# convert line endings to DOS format
+sed -ri 's/(^|[^\r])$/&\r/' Doc/remap/*
+
 zip -r remap.zip Modules Doc
 
 rm -r Modules Doc
