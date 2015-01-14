@@ -13,6 +13,7 @@
 #define ORBITER_MODULE
 #include "Orbitersdk.h"
 
+#include <string>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 struct Thruster
 {
-    const char* name;       // name in keymap.cfg
+    std::string name;       // name in keymap.cfg
     THGROUP_TYPE thruster;  // thruster group
     double level;           // thrust level
 };

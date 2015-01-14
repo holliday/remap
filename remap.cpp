@@ -94,7 +94,7 @@ void Remap::clbkPreStep(double, double, double)
                 control.previous = control.current;
 
 #ifndef NDEBUG
-                sprintf(message, "%s = %f", control.thruster->name, level);
+                sprintf(message, "%s = %f", control.thruster->name.data(), level);
                 oapiWriteLog(message);
 #endif
             }
