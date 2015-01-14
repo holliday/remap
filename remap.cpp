@@ -8,6 +8,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "remap.hpp"
 
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+
+static char message[256];
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 DLLCLBK void InitModule(HINSTANCE hModule)
@@ -33,7 +39,7 @@ LRESULT CALLBACK Remap::StaticLowLevelKeyboardProc(int nCode, WPARAM wParam, LPA
 Remap::Remap(HINSTANCE hDLL):
     oapi::Module(hDLL)
 {
-    // read keymap.cfg
+    readKeymap();
 
     instance = this;
     hook = SetWindowsHookEx(WH_KEYBOARD_LL, &Remap::StaticLowLevelKeyboardProc, hModule, 0);
@@ -50,6 +56,78 @@ Remap::~Remap()
         UnhookWindowsHookEx(hook);
         oapiWriteLog("Remap::Remap: uninstalled keyboard hook");
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void Remap::readKeymap()
+{
+    controls.clear();
+
+    std::ifstream file("keymap.cfg");
+    if(file)
+    {
+        std::string read;
+
+        while(std::getline(file, read))
+        {
+            if(read.empty()) continue;
+
+            std::istringstream stream(read);
+
+            std::string name;
+            stream >> name;
+            if(name.empty()) continue;
+
+            Thruster* thruster = NULL;
+
+            for(int i = 0; i < THRUSTER_COUNT; ++i)
+                if(thrusters[i].name == name)
+                {
+                    thruster = &thrusters[i];
+                    break;
+                }
+            if(!thruster) continue;
+
+            std::string value;
+            stream >> value;
+            if(value != "=") continue;
+
+            int key = None;
+            for(;;)
+            {
+                value.clear();
+                stream >> value;
+                if(value.empty()) break;
+
+                if(value == "ALT")
+                    key |= Alt;
+                else if(value == "SHIFT")
+                    key |= Shift;
+                else if(value == "CTRL")
+                    key |= Ctrl;
+                else if(0 == (key & KeyMask))
+                {
+                    for(int i = 0; i < KEYMAP_COUNT; ++i)
+                        if(keymap[i].name == value)
+                        {
+                            key |= keymap[i].key;
+                            break;
+                        }
+                }
+            }
+            if(0 == (key & KeyMask)) continue;
+
+            Control control = { key, false, false, thruster };
+            controls.push_back(control);
+
+#ifndef NDEBUG
+            sprintf(message, "%s: key = 0x%x modifier = 0x%x", thruster->name.data(), key & KeyMask, key & ModMask);
+            oapiWriteLog(message);
+#endif
+        }
+        file.close();
+    }
+    else oapiWriteLog("Remap::readKeymap: failed to open keymap.cfg");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,8 +157,6 @@ LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
 ////////////////////////////////////////////////////////////////////////////////
 void Remap::clbkPreStep(double, double, double)
 {
-    static char message[256];
-
     VESSEL* vessel = oapiGetFocusInterface();
     if(vessel)
     {

@@ -22,6 +22,20 @@
 #define VERSION_MICRO 0
 
 ////////////////////////////////////////////////////////////////////////////////
+struct Keymap
+{
+    std::string name;
+    int key;
+};
+
+struct Keymap keymap[] =
+{
+    #include "keymap.inc"
+};
+
+#define KEYMAP_COUNT (sizeof(keymap) / sizeof(keymap[0]))
+
+////////////////////////////////////////////////////////////////////////////////
 struct Thruster
 {
     std::string name;       // name in keymap.cfg
@@ -61,15 +75,18 @@ struct Thruster thrusters[] =
     { "LPRCSBackDirect"     , THGROUP_ATT_BACK,      0.1 },
 };
 
-#define THRUSTER_COUNT (sizeof(thruster) / sizeof(thruster[0]))
+#define THRUSTER_COUNT (sizeof(thrusters) / sizeof(thrusters[0]))
 
 ////////////////////////////////////////////////////////////////////////////////
 enum Modifier
 {
-    None  = 0x0000,
-    Alt   = 0x0100,
-    Shift = 0x0200,
-    Ctrl  = 0x0400,
+    None    = 0x0000,
+    Alt     = 0x1000,
+    Shift   = 0x2000,
+    Ctrl    = 0x4000,
+
+    ModMask = 0xf000,
+    KeyMask = 0x0fff,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +108,8 @@ public:
     Remap(HINSTANCE hDLL);
     ~Remap();
     virtual void clbkPreStep(double simt, double simdt, double mjd);
+
+    void readKeymap();
 
 protected:
     Controls controls;
