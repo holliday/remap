@@ -13,76 +13,74 @@
 #define ORBITER_MODULE
 #include "Orbitersdk.h"
 
+#include <vector>
+
 ////////////////////////////////////////////////////////////////////////////////
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 3
 #define VERSION_MICRO 0
 
 ////////////////////////////////////////////////////////////////////////////////
-enum Modifier
+struct Thruster
 {
-    None  = 0x00,
-    Alt   = 0x01,
-    Shift = 0x02,
-    Ctrl  = 0x04,
+    const char* name;       // name in keymap.cfg
+    THGROUP_TYPE thruster;  // thruster group
+    double level;           // thrust level
 };
 
-inline Modifier operator|(Modifier x, Modifier y)
+////////////////////////////////////////////////////////////////////////////////
+struct Thruster thrusters[] =
 {
-    return static_cast<Modifier>(static_cast<int>(y) | static_cast<int>(x));
-}
+    {   "RCSPitchUpDirect"  , THGROUP_ATT_PITCHUP,   1.0 },
+    {   "RCSPitchDownDirect", THGROUP_ATT_PITCHDOWN, 1.0 },
+    {   "RCSYawLeftDirect"  , THGROUP_ATT_YAWLEFT,   1.0 },
+    {   "RCSYawRightDirect" , THGROUP_ATT_YAWRIGHT,  1.0 },
+    {   "RCSBankLeftDirect" , THGROUP_ATT_BANKLEFT,  1.0 },
+    {   "RCSBankRightDirect", THGROUP_ATT_BANKRIGHT, 1.0 },
+
+    { "LPRCSPitchUpDirect"  , THGROUP_ATT_PITCHUP,   0.1 },
+    { "LPRCSPitchDownDirect", THGROUP_ATT_PITCHDOWN, 0.1 },
+    { "LPRCSYawLeftDirect"  , THGROUP_ATT_YAWLEFT,   0.1 },
+    { "LPRCSYawRightDirect" , THGROUP_ATT_YAWRIGHT,  0.1 },
+    { "LPRCSBankLeftDirect" , THGROUP_ATT_BANKLEFT,  0.1 },
+    { "LPRCSBankRightDirect", THGROUP_ATT_BANKRIGHT, 0.1 },
+
+    {   "RCSRightDirect"    , THGROUP_ATT_RIGHT,     1.0 },
+    {   "RCSLeftDirect"     , THGROUP_ATT_LEFT,      1.0 },
+    {   "RCSUpDirect"       , THGROUP_ATT_UP,        1.0 },
+    {   "RCSDownDirect"     , THGROUP_ATT_DOWN,      1.0 },
+    {   "RCSForwardDirect"  , THGROUP_ATT_FORWARD,   1.0 },
+    {   "RCSBackDirect"     , THGROUP_ATT_BACK,      1.0 },
+
+    { "LPRCSRightDirect"    , THGROUP_ATT_RIGHT,     0.1 },
+    { "LPRCSLeftDirect"     , THGROUP_ATT_LEFT,      0.1 },
+    { "LPRCSUpDirect"       , THGROUP_ATT_UP,        0.1 },
+    { "LPRCSDownDirect"     , THGROUP_ATT_DOWN,      0.1 },
+    { "LPRCSForwardDirect"  , THGROUP_ATT_FORWARD,   0.1 },
+    { "LPRCSBackDirect"     , THGROUP_ATT_BACK,      0.1 },
+};
+
+#define THRUSTER_COUNT (sizeof(thruster) / sizeof(thruster[0]))
+
+////////////////////////////////////////////////////////////////////////////////
+enum Modifier
+{
+    None  = 0x0000,
+    Alt   = 0x0100,
+    Shift = 0x0200,
+    Ctrl  = 0x0400,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 struct Control
 {
-    Modifier modifier;      // ... with these modifiers ...
-    int key;                // when this key is pressed
-    THGROUP_TYPE thruster;  // set this thruster
-    double level;           // to this value
-
-    const char* name;       // for debugging only
-};
-
-////////////////////////////////////////////////////////////////////////////////
-struct Control control[] =
-{
-    {        Shift, OAPI_KEY_NUMPAD2, THGROUP_ATT_PITCHUP,   1.0, "PITCHUP"   },
-    {        Shift, OAPI_KEY_NUMPAD8, THGROUP_ATT_PITCHDOWN, 1.0, "PITCHDOWN" },
-    {        Shift, OAPI_KEY_NUMPAD1, THGROUP_ATT_YAWLEFT,   1.0, "YAWLEFT"   },
-    {        Shift, OAPI_KEY_NUMPAD3, THGROUP_ATT_YAWRIGHT,  1.0, "YAWRIGHT"  },
-    {        Shift, OAPI_KEY_NUMPAD4, THGROUP_ATT_BANKLEFT,  1.0, "BANKLEFT"  },
-    {        Shift, OAPI_KEY_NUMPAD6, THGROUP_ATT_BANKRIGHT, 1.0, "BANKRIGHT" },
-
-    { Ctrl | Shift, OAPI_KEY_NUMPAD2, THGROUP_ATT_PITCHUP,   0.1, "PITCHUP"   },
-    { Ctrl | Shift, OAPI_KEY_NUMPAD8, THGROUP_ATT_PITCHDOWN, 0.1, "PITCHDOWN" },
-    { Ctrl | Shift, OAPI_KEY_NUMPAD1, THGROUP_ATT_YAWLEFT,   0.1, "YAWLEFT"   },
-    { Ctrl | Shift, OAPI_KEY_NUMPAD3, THGROUP_ATT_YAWRIGHT,  0.1, "YAWRIGHT"  },
-    { Ctrl | Shift, OAPI_KEY_NUMPAD4, THGROUP_ATT_BANKLEFT,  0.1, "BANKLEFT"  },
-    { Ctrl | Shift, OAPI_KEY_NUMPAD6, THGROUP_ATT_BANKRIGHT, 0.1, "BANKRIGHT" },
-
-    {        Alt  , OAPI_KEY_NUMPAD6, THGROUP_ATT_RIGHT,     1.0, "RIGHT"     },
-    {        Alt  , OAPI_KEY_NUMPAD4, THGROUP_ATT_LEFT,      1.0, "LEFT"      },
-    {        Alt  , OAPI_KEY_NUMPAD9, THGROUP_ATT_UP,        1.0, "UP"        },
-    {        Alt  , OAPI_KEY_NUMPAD3, THGROUP_ATT_DOWN,      1.0, "DOWN"      },
-    {        Alt  , OAPI_KEY_NUMPAD8, THGROUP_ATT_FORWARD,   1.0, "FORWARD"   },
-    {        Alt  , OAPI_KEY_NUMPAD2, THGROUP_ATT_BACK,      1.0, "BACK"      },
-
-    { Ctrl | Alt  , OAPI_KEY_NUMPAD6, THGROUP_ATT_RIGHT,     0.1, "RIGHT"     },
-    { Ctrl | Alt  , OAPI_KEY_NUMPAD4, THGROUP_ATT_LEFT,      0.1, "LEFT"      },
-    { Ctrl | Alt  , OAPI_KEY_NUMPAD9, THGROUP_ATT_UP,        0.1, "UP"        },
-    { Ctrl | Alt  , OAPI_KEY_NUMPAD3, THGROUP_ATT_DOWN,      0.1, "DOWN"      },
-    { Ctrl | Alt  , OAPI_KEY_NUMPAD8, THGROUP_ATT_FORWARD,   0.1, "FORWARD"   },
-    { Ctrl | Alt  , OAPI_KEY_NUMPAD2, THGROUP_ATT_BACK,      0.1, "BACK"      },
-};
-
-#define CONTROL_COUNT (sizeof(control) / sizeof(control[0]))
-
-////////////////////////////////////////////////////////////////////////////////
-struct State
-{
+    int key;
     bool previous;
     bool current;
+    Thruster* thruster;
 };
+
+typedef std::vector<Control> Controls;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +92,7 @@ public:
     virtual void clbkPreStep(double simt, double simdt, double mjd);
 
 protected:
-    State state[CONTROL_COUNT];
+    Controls controls;
 
     LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 

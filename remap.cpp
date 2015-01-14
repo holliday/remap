@@ -33,11 +33,7 @@ LRESULT CALLBACK Remap::StaticLowLevelKeyboardProc(int nCode, WPARAM wParam, LPA
 Remap::Remap(HINSTANCE hDLL):
     oapi::Module(hDLL)
 {
-    for(int i = 0; i < CONTROL_COUNT; ++i)
-    {
-        state[i].previous = false;
-        state[i].current = false;
-    }
+    // read keymap.cfg
 
     instance = this;
     hook = SetWindowsHookEx(WH_KEYBOARD_LL, &Remap::StaticLowLevelKeyboardProc, hModule, 0);
@@ -65,14 +61,17 @@ LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
 {
     KBDLLHOOKSTRUCT* kbd = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 
-    Modifier modifier = None;
-    if(getKeyState(VK_MENU))    modifier = modifier | Alt;
-    if(getKeyState(VK_SHIFT))   modifier = modifier | Shift;
-    if(getKeyState(VK_CONTROL)) modifier = modifier | Ctrl;
+    int key = kbd->scanCode;
+    if(getKeyState(VK_MENU))    key |= Alt;
+    if(getKeyState(VK_SHIFT))   key |= Shift;
+    if(getKeyState(VK_CONTROL)) key |= Ctrl;
+    bool press = !(kbd->flags & LLKHF_UP);
 
-    for(int i = 0; i < CONTROL_COUNT; ++i)
-        state[i].current = !(kbd->flags & LLKHF_UP) && control[i].key == kbd->scanCode
-                                                    && control[i].modifier == modifier;
+    for(Controls::iterator ri = controls.begin(), ri_end = controls.end(); ri != ri_end; ++ri)
+    {
+        Control& control = *ri;
+        control.current = press && control.key == key;
+    }
 
     return CallNextHookEx(hook, nCode, wParam, lParam);
 }
@@ -85,16 +84,17 @@ void Remap::clbkPreStep(double, double, double)
     VESSEL* vessel = oapiGetFocusInterface();
     if(vessel)
     {
-        for(int i = 0; i < CONTROL_COUNT; ++i)
+        for(Controls::iterator ri = controls.begin(), ri_end = controls.end(); ri != ri_end; ++ri)
         {
-            if(state[i].current != state[i].previous)
+            Control& control = *ri;
+            if(control.current != control.previous)
             {
-                double level = state[i].current ? control[i].level : 0.0;
-                vessel->SetThrusterGroupLevel(control[i].thruster, level);
-                state[i].previous = state[i].current;
+                double level = control.current ? control.thruster->level : 0.0;
+                vessel->SetThrusterGroupLevel(control.thruster->thruster, level);
+                control.previous = control.current;
 
 #ifndef NDEBUG
-                sprintf(message, "%s = %f", control[i].name, level);
+                sprintf(message, "%s = %f", control.thruster->name, level);
                 oapiWriteLog(message);
 #endif
             }
