@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mkdir -p Modules/Plugin Doc/remap
+
+nmake clean
+nmake all
+
+cp remap.dll Modules/Plugin
+cp README COPYING keymap-default.cfg Doc/remap
+
+zip -r remap.zip Modules Doc
+
+rm -r Modules Doc
