@@ -13,4 +13,5 @@ sed -ri 's/(^|[^\r])$/&\r/' Doc/remap/*
 
 zip -r remap.zip Modules Doc
 
+nmake clean
 rm -r Modules Doc
