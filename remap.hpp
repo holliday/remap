@@ -92,10 +92,10 @@ enum Modifier
 ////////////////////////////////////////////////////////////////////////////////
 struct Control
 {
-    int key;
-    bool previous;
-    bool current;
-    Thruster* thruster;
+    int key;            // scan code + modifiers
+    bool previous;      // previous state (pressed/released)
+    bool current;       // current state
+    Thruster* thruster; // thruster to engage
 };
 
 typedef std::vector<Control> Controls;
