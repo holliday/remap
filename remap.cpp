@@ -146,7 +146,11 @@ LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
     for(Controls::iterator ri = controls.begin(), ri_end = controls.end(); ri != ri_end; ++ri)
     {
         Control& control = *ri;
-        control.current = press && control.key == key;
+        if(control.key == key)
+        {
+            control.current = press;
+            break;
+        }
     }
 
     return CallNextHookEx(hook, nCode, wParam, lParam);
