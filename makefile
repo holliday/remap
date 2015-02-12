@@ -2,14 +2,20 @@
 TARGET		= remap.dll
 SOURCES		= remap.cpp
 
-PLATFORMSDK	= C:\Program Files\Microsoft Platform SDK
-ORBITER		= C:\Orbiter 2010
-ORBITERSDK	= $(ORBITER)\Orbitersdk
+# Windows SDK
+WINDOWSSDK	= C:\Program Files\Microsoft SDKs\Windows\v6.0
+INCLUDES	= /I "$(WINDOWSSDK)\VC\Include" /I "$(WINDOWSSDK)\Include" $(INCLUDES)
+LIBRARIES	= /LIBPATH:"$(WINDOWSSDK)\VC\Lib" /LIBPATH:"$(WINDOWSSDK)\Lib" user32.lib $(LIBRARIES)
+
+ORBITER		= $(MAKEDIR)\Orbiter 2010
 ORBITERADDON= $(ORBITER)\Modules\Plugin
 
-INCLUDES	= /I "$(ORBITERSDK)\include" /I "$(PLATFORMSDK)\Include"
-LIBRARIES	= /LIBPATH:"$(ORBITERSDK)\lib" orbiter.lib Orbitersdk.lib /LIBPATH:"$(PLATFORMSDK)\Lib" user32.lib
-DEFINES		= /D WIN32 /D NDEBUG /D _WINDOWS /D _WIN32_WINNT=0x0501
+# Orbiter SDK
+ORBITERSDK	= $(ORBITER)\Orbitersdk
+INCLUDES	= /I "$(ORBITERSDK)\include" $(INCLUDES)
+LIBRARIES	= /LIBPATH:"$(ORBITERSDK)\lib" orbiter.lib Orbitersdk.lib $(LIBRARIES)
+
+DEFINES		= /D WIN32 /D NDEBUG /D _WINDOWS
 
 CXX			= cl
 CXXFLAGS	= /O2 /EHsc /MD /GS- /fp:fast /W3 /GL /LD
