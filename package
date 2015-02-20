@@ -1,17 +1,17 @@
 #!/bin/bash
 
-mkdir -p Modules/Plugin Doc/remap
+mkdir -p Modules/Plugin Doc/remapt
 
 nmake clean
 nmake all
 
-cp remap.dll Modules/Plugin
-cp README COPYING keymap-default.cfg Doc/remap
+cp remapt.dll Modules/Plugin
+cp README COPYING keymap-default.cfg Doc/remapt
 
 # convert line endings to DOS format
-sed -ri 's/(^|[^\r])$/&\r/' Doc/remap/*
+sed -ri 's/(^|[^\r])$/&\r/' Doc/remapt/*
 
-zip -r remap.zip Modules Doc
+zip -r remapt.zip Modules Doc
 
 nmake clean
 rm -r Modules Doc
