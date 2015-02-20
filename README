@@ -1,6 +1,6 @@
 README
 
-Remap is an addon for the Orbiter Space Flight Simulator.
+Remapt is an addon for the Orbiter Space Flight Simulator.
 
 It defines additional key mappings for direct control of the thrusters
 for the currently selected vessel.
@@ -28,7 +28,7 @@ RCSLowPowerToggle = P
 INSTALL
 
 1. Copy the Doc and the Modules directories into your Orbiter install.
-2. Launch the Orbiter and enable the 'remap' addon.
+2. Launch the Orbiter and enable the 'remapt' addon.
 3. Share and enjoy.
 
 BUILD
