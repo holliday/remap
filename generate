@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DEFAULT_ORBITERAPI="C:/Orbiter 2010/Orbitersdk/include/OrbiterAPI.h"
+DEFAULT_ORBITERAPI="./Orbiter 2010/Orbitersdk/include/OrbiterAPI.h"
 
 if [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
-    echo "Usage: generate.sh [ /path/to/OrbiterAPI.h ]"
+    echo "Usage: generate [ /path/to/OrbiterAPI.h ]"
     echo "Default path: ${DEFAULT_ORBITERAPI}"
     echo
     exit 0
