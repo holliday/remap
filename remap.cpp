@@ -38,6 +38,9 @@ LRESULT CALLBACK Remap::StaticLowLevelKeyboardProc(int nCode, WPARAM wParam, LPA
 Remap::Remap(HINSTANCE hDLL):
     oapi::Module(hDLL)
 {
+    toggle.key = 0;
+    toggle.on = false;
+
     readKeymap();
 
     instance = this;
@@ -115,8 +118,12 @@ void Remap::readKeymap()
             }
             if(0 == (key & KeyMask)) continue;
 
-            Control control = { key, false, false, thruster };
-            controls.push_back(control);
+            if(thruster->thruster != THGROUP_USER)
+            {
+                Control control = { key, false, false, thruster };
+                controls.push_back(control);
+            }
+            else toggle.key = key;
 
 #ifndef NDEBUG
             sprintf(message, "%s: key = 0x%x modifier = 0x%x", thruster->name.data(), key & KeyMask, key & ModMask);
@@ -153,6 +160,8 @@ LRESULT CALLBACK Remap::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
         }
     }
 
+    if(toggle.key == key && press) toggle.on = !toggle.on;
+
     return CallNextHookEx(hook, nCode, wParam, lParam);
 }
 
@@ -167,7 +176,7 @@ void Remap::clbkPreStep(double, double, double)
             Control& control = *ri;
             if(control.current != control.previous)
             {
-                double level = control.current ? control.thruster->level : 0.0;
+                double level = control.current ? (toggle.on ? 0.1 : 1.0) : 0.0;
                 vessel->SetThrusterGroupLevel(control.thruster->thruster, level);
                 control.previous = control.current;
 
