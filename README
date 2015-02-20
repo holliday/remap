@@ -44,8 +44,9 @@ INSTALL
 
 BUILD
 
-1. Ensure PLATFORMSDK and ORBITER paths are set correctly in the makefile.
+1. Ensure WINDOWSSDK and ORBITER paths are set correctly in the makefile.
 2. Run 'nmake all' to compile the addon.
+3. Share and enjoy.
 
 AUTHORS
 
