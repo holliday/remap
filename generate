@@ -13,4 +13,17 @@ else
     ORBITERAPI="${DEFAULT_ORBITERAPI}"
 fi
 
-sed -rne 's/^(\s*)(#define\s+)(OAPI_KEY_)([a-zA-Z0-9_]+)(\s+.*)$/{ "\4", \3\4 },/p' "${ORBITERAPI}" > keymap.inc
+cat > keymap.hpp <<EOF
+#include <string>
+
+struct Keymap
+{
+    std::string name;
+    int key;
+};
+
+struct Keymap keymap[] =
+{
+$(sed -rne 's/^(\s*)(#define\s+)(OAPI_KEY_)([a-zA-Z0-9_]+)(\s+.*)$/    { "\4", \3\4 },/p' "${ORBITERAPI}")
+};
+EOF

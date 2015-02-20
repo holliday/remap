@@ -22,16 +22,7 @@
 #define VERSION_MICRO 1
 
 ////////////////////////////////////////////////////////////////////////////////
-struct Keymap
-{
-    std::string name;
-    int key;
-};
-
-struct Keymap keymap[] =
-{
-    #include "keymap.inc"
-};
+#include "keymap.hpp"
 
 #define KEYMAP_COUNT (sizeof(keymap) / sizeof(keymap[0]))
 
