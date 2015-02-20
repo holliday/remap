@@ -1,5 +1,5 @@
 ########## DEFINITIONS ##########
-TARGET		= remap.dll
+TARGET		= remapt.dll
 SOURCES		= remap.cpp
 
 # Windows SDK
@@ -23,16 +23,16 @@ CXXFLAGS	= /O2 /EHsc /MD /GS- /fp:fast /W3 /GL /LD
 LINKFLAGS	= /MACHINE:X86 /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /LTCG
 
 all: $(TARGET)
-	@echo Compiled $(TARGET)
+        @echo Compiled $(TARGET)
 
 $(TARGET): $(SOURCES)
-	@echo Compiling $(SOURCES)
-	$(CXX) $(INCLUDES) $(DEFINES) $(CXXFLAGS) $(SOURCES) /link /OUT:$(TARGET) $(LINKFLAGS) $(LIBRARIES)
+        @echo Compiling $(SOURCES)
+        $(CXX) $(INCLUDES) $(DEFINES) $(CXXFLAGS) $(SOURCES) /link /OUT:$(TARGET) $(LINKFLAGS) $(LIBRARIES)
 
 clean:
-	@echo Cleaning files
-	-del *.obj *.lib *.exp *.manifest $(TARGET)
+        @echo Cleaning files
+        -del *.obj *.lib *.exp *.manifest $(TARGET)
 
 install: $(TARGET)
-	@echo Installing $(TARGET)
-	copy /y $(TARGET) "$(ORBITERADDON)\$(TARGET)"
+        @echo Installing $(TARGET)
+        copy /y $(TARGET) "$(ORBITERADDON)\$(TARGET)"
